@@ -1,0 +1,12 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const billing_controller_1 = require("../controllers/billing.controller");
+const auth_1 = require("../middlewares/auth");
+const router = (0, express_1.Router)();
+router.use(auth_1.authenticateUser);
+router.use(auth_1.requireOrganization);
+router.get("/dashboard", billing_controller_1.getBillingDashboard);
+router.put("/subscribe", (0, auth_1.requireRole)(["OWNER", "ADMIN"]), billing_controller_1.updateSubscription);
+router.get("/invoices/:invoiceId/download", billing_controller_1.downloadInvoicePdf);
+exports.default = router;

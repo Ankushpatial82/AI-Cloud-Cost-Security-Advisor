@@ -1,0 +1,13 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const alert_controller_1 = require("../controllers/alert.controller");
+const auth_1 = require("../middlewares/auth");
+const router = (0, express_1.Router)();
+router.use(auth_1.authenticateUser);
+router.use(auth_1.requireOrganization);
+router.get("/", alert_controller_1.getAlerts);
+router.put("/:alertId/acknowledge", alert_controller_1.acknowledgeAlert);
+router.get("/settings", alert_controller_1.getNotificationSettings);
+router.put("/settings", (0, auth_1.requireRole)(["OWNER", "ADMIN"]), alert_controller_1.updateNotificationSettings);
+exports.default = router;

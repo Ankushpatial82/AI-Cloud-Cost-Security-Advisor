@@ -1,0 +1,12 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const resource_controller_1 = require("../controllers/resource.controller");
+const auth_1 = require("../middlewares/auth");
+const router = (0, express_1.Router)();
+router.use(auth_1.authenticateUser);
+router.use(auth_1.requireOrganization);
+router.get("/", resource_controller_1.getResources);
+router.get("/summary", resource_controller_1.getResourceSummary);
+router.get("/:id", resource_controller_1.getResourceDetails);
+exports.default = router;

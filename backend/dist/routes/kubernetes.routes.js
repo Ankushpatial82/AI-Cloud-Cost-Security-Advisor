@@ -1,0 +1,14 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const kubernetes_controller_1 = require("../controllers/kubernetes.controller");
+const auth_1 = require("../middlewares/auth");
+const audit_1 = require("../middlewares/audit");
+const router = (0, express_1.Router)();
+router.use(auth_1.authenticateUser);
+router.use(auth_1.requireOrganization);
+router.post("/connect", (0, auth_1.requireRole)(["OWNER", "ADMIN"]), (0, audit_1.auditLogger)("K8S_CLUSTER_CONNECT"), kubernetes_controller_1.connectCluster);
+router.get("/", kubernetes_controller_1.getClusters);
+router.get("/:clusterId/metrics", kubernetes_controller_1.getClusterMetrics);
+router.get("/:clusterId/recommendations", kubernetes_controller_1.getClusterRecommendations);
+exports.default = router;

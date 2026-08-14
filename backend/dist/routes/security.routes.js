@@ -1,0 +1,13 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const security_controller_1 = require("../controllers/security.controller");
+const auth_1 = require("../middlewares/auth");
+const router = (0, express_1.Router)();
+router.use(auth_1.authenticateUser);
+router.use(auth_1.requireOrganization);
+router.get("/dashboard", security_controller_1.getSecurityDashboard);
+router.get("/findings", security_controller_1.getFindings);
+router.post("/findings/:findingId/explain", security_controller_1.explainFinding);
+router.put("/findings/:findingId/status", security_controller_1.updateFindingStatus);
+exports.default = router;

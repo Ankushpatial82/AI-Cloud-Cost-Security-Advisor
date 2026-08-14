@@ -1,0 +1,13 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const cloudAccount_controller_1 = require("../controllers/cloudAccount.controller");
+const auth_1 = require("../middlewares/auth");
+const audit_1 = require("../middlewares/audit");
+const router = (0, express_1.Router)();
+router.use(auth_1.authenticateUser);
+router.post("/", auth_1.requireOrganization, (0, auth_1.requireRole)(["OWNER", "ADMIN"]), (0, audit_1.auditLogger)("CLOUD_ACCOUNT_CONNECT"), cloudAccount_controller_1.addAccount);
+router.get("/", auth_1.requireOrganization, cloudAccount_controller_1.getAccounts);
+router.post("/:accountId/validate", auth_1.requireOrganization, cloudAccount_controller_1.validateAccount);
+router.delete("/:accountId", auth_1.requireOrganization, (0, auth_1.requireRole)(["OWNER", "ADMIN"]), (0, audit_1.auditLogger)("CLOUD_ACCOUNT_DISCONNECT"), cloudAccount_controller_1.deleteAccount);
+exports.default = router;
