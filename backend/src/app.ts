@@ -15,7 +15,19 @@ const app = express();
 
 // Middlewares
 app.use(cors({
-  origin: process.env.FRONTEND_URL || "http://localhost:3000",
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true);
+    const allowed = process.env.FRONTEND_URL;
+    if (
+      !allowed ||
+      origin === allowed ||
+      origin.endsWith(".vercel.app") ||
+      origin.includes("localhost")
+    ) {
+      return callback(null, true);
+    }
+    return callback(null, true);
+  },
   credentials: true,
 }));
 app.use(express.json());
