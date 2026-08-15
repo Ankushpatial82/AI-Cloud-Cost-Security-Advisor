@@ -49,3 +49,31 @@ Suggest root-cause explanations and steps to resolve these faults.`;
     return res.status(500).json({ success: false, message: "Log analysis failed", error: error.message });
   }
 };
+
+export const getAuditLogs = async (req: Request, res: Response) => {
+  try {
+    const orgId = req.org?.id;
+    if (!orgId) return res.status(400).json({ success: false, message: "Organization context required" });
+
+    const auditLogs = await prisma.auditLog.findMany({
+      where: { organizationId: orgId },
+      include: {
+        user: {
+          select: {
+            name: true,
+            email: true,
+          },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+      take: 50,
+    });
+
+    return res.json({
+      success: true,
+      data: auditLogs,
+    });
+  } catch (error: any) {
+    return res.status(500).json({ success: false, message: "Failed to fetch audit logs", error: error.message });
+  }
+};
