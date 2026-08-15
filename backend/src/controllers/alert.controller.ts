@@ -22,7 +22,7 @@ export const getAlerts = async (req: Request, res: Response) => {
 export const acknowledgeAlert = async (req: Request, res: Response) => {
   try {
     const orgId = req.org?.id;
-    const { alertId } = req.params;
+    const alertId = req.params.alertId as string;
 
     if (!orgId) return res.status(400).json({ success: false, message: "Organization context required" });
 

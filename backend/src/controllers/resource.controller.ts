@@ -143,7 +143,7 @@ export const getResourceSummary = async (req: Request, res: Response) => {
 export const getResourceDetails = async (req: Request, res: Response) => {
   try {
     const orgId = req.org?.id;
-    const { id } = req.params;
+    const id = req.params.id as string;
 
     if (!orgId) return res.status(400).json({ success: false, message: "Organization context required" });
 

@@ -76,7 +76,7 @@ export const getClusters = async (req: Request, res: Response) => {
 export const getClusterMetrics = async (req: Request, res: Response) => {
   try {
     const orgId = req.org?.id;
-    const { clusterId } = req.params;
+    const clusterId = req.params.clusterId as string;
 
     if (!orgId) return res.status(400).json({ success: false, message: "Organization context required" });
 
@@ -119,7 +119,7 @@ export const getClusterMetrics = async (req: Request, res: Response) => {
 export const getClusterRecommendations = async (req: Request, res: Response) => {
   try {
     const orgId = req.org?.id;
-    const { clusterId } = req.params;
+    const clusterId = req.params.clusterId as string;
 
     if (!orgId) return res.status(400).json({ success: false, message: "Organization context required" });
 

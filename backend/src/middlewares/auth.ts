@@ -20,7 +20,7 @@ export const authenticateUser = (req: Request, res: Response, next: NextFunction
 };
 
 export const requireOrganization = (req: Request, res: Response, next: NextFunction) => {
-  const orgId = req.headers["x-organization-id"] as string || req.params.orgId;
+  const orgId = (req.headers["x-organization-id"] as string) || (req.params.orgId as string);
   const userId = req.user?.userId;
 
   if (!orgId) {

@@ -105,7 +105,7 @@ export const updateSubscription = async (req: Request, res: Response) => {
 export const downloadInvoicePdf = async (req: Request, res: Response) => {
   try {
     const orgId = req.org?.id;
-    const { invoiceId } = req.params;
+    const invoiceId = req.params.invoiceId as string;
 
     if (!orgId) return res.status(400).json({ success: false, message: "Organization context required" });
 

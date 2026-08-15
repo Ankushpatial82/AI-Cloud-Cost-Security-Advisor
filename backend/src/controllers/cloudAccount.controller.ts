@@ -88,7 +88,7 @@ export const getAccounts = async (req: Request, res: Response) => {
 export const validateAccount = async (req: Request, res: Response) => {
   try {
     const orgId = req.org?.id;
-    const { accountId } = req.params;
+    const accountId = req.params.accountId as string;
 
     if (!orgId) return res.status(400).json({ success: false, message: "Organization context required" });
 
@@ -132,7 +132,7 @@ export const validateAccount = async (req: Request, res: Response) => {
 export const deleteAccount = async (req: Request, res: Response) => {
   try {
     const orgId = req.org?.id;
-    const { accountId } = req.params;
+    const accountId = req.params.accountId as string;
 
     if (!orgId) return res.status(400).json({ success: false, message: "Organization context required" });
 

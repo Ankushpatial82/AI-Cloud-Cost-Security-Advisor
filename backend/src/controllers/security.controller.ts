@@ -97,7 +97,7 @@ export const getFindings = async (req: Request, res: Response) => {
 export const explainFinding = async (req: Request, res: Response) => {
   try {
     const orgId = req.org?.id;
-    const { findingId } = req.params;
+    const findingId = req.params.findingId as string;
 
     if (!orgId) return res.status(400).json({ success: false, message: "Organization context required" });
 
@@ -148,7 +148,7 @@ Provide a root-cause explanation and the specific command-line or console steps 
 export const updateFindingStatus = async (req: Request, res: Response) => {
   try {
     const orgId = req.org?.id;
-    const { findingId } = req.params;
+    const findingId = req.params.findingId as string;
     const { status } = req.body; // RESOLVED or MUTED
 
     if (!orgId) return res.status(400).json({ success: false, message: "Organization context required" });

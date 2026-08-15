@@ -205,7 +205,7 @@ export const addMember = async (req: Request, res: Response) => {
 export const updateMemberRole = async (req: Request, res: Response) => {
   try {
     const orgId = req.org?.id;
-    const { memberId } = req.params;
+    const memberId = req.params.memberId as string;
     const { role } = req.body;
 
     if (!orgId) return res.status(400).json({ success: false, message: "Organization context required" });
@@ -267,7 +267,7 @@ export const updateMemberRole = async (req: Request, res: Response) => {
 export const removeMember = async (req: Request, res: Response) => {
   try {
     const orgId = req.org?.id;
-    const { memberId } = req.params;
+    const memberId = req.params.memberId as string;
 
     if (!orgId) return res.status(400).json({ success: false, message: "Organization context required" });
 
