@@ -41,10 +41,14 @@ export default function LoginPage() {
           // Normal login success without MFA
           setAuth(data.user, data.organization, data.accessToken);
           
-          // Fetch user's organizations
-          const orgsRes = await api.get("/orgs");
-          if (orgsRes.data?.success) {
-            setOrganizations(orgsRes.data.data);
+          // Fetch user's organizations safely
+          try {
+            const orgsRes = await api.get("/orgs");
+            if (orgsRes.data?.success) {
+              setOrganizations(orgsRes.data.data);
+            }
+          } catch (orgErr) {
+            console.warn("Could not pre-fetch orgs:", orgErr);
           }
           
           router.push("/dashboard");

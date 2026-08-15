@@ -34,10 +34,14 @@ export default function RegisterPage() {
         // Log in the user automatically
         setAuth(data.user, data.organization, data.accessToken);
         
-        // Fetch and cache organization options
-        const orgsRes = await api.get("/orgs");
-        if (orgsRes.data?.success) {
-          setOrganizations(orgsRes.data.data);
+        // Fetch and cache organization options safely
+        try {
+          const orgsRes = await api.get("/orgs");
+          if (orgsRes.data?.success) {
+            setOrganizations(orgsRes.data.data);
+          }
+        } catch (orgErr) {
+          console.warn("Could not pre-fetch orgs:", orgErr);
         }
         
         router.push("/dashboard");
