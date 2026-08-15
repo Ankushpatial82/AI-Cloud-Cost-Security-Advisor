@@ -26,14 +26,14 @@ export default function RegisterPage() {
     setError("");
 
     try {
-      const res = await api.post("/auth/register", { name, email, password });
-      
+      const res = await api.post("/api/auth/register", { name, email, password });
+
       if (res.data?.success) {
         const data = res.data.data;
-        
+
         // Log in the user automatically
         setAuth(data.user, data.organization, data.accessToken);
-        
+
         // Fetch and cache organization options safely
         try {
           const orgsRes = await api.get("/orgs");
@@ -43,7 +43,7 @@ export default function RegisterPage() {
         } catch (orgErr) {
           console.warn("Could not pre-fetch orgs:", orgErr);
         }
-        
+
         router.push("/dashboard");
       }
     } catch (err: any) {
