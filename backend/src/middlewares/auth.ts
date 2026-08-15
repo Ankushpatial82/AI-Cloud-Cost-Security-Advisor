@@ -19,37 +19,46 @@ export const authenticateUser = (req: Request, res: Response, next: NextFunction
   }
 };
 
-export const requireOrganization = (req: Request, res: Response, next: NextFunction) => {
-  const orgId = (req.headers["x-organization-id"] as string) || (req.params.orgId as string);
-  const userId = req.user?.userId;
+export const requireOrganization = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    let orgId = (req.headers["x-organization-id"] as string) || (req.params.orgId as string);
+    const userId = req.user?.userId;
 
-  if (!orgId) {
-    return res.status(400).json({ success: false, message: "Organization ID is required in headers (x-organization-id) or path params" });
-  }
-
-  if (!userId) {
-    return res.status(401).json({ success: false, message: "Authentication required" });
-  }
-
-  prisma.userOrganization.findUnique({
-    where: {
-      userId_organizationId: {
-        userId,
-        organizationId: orgId,
-      }
+    if (!userId) {
+      return res.status(401).json({ success: false, message: "Authentication required" });
     }
-  }).then((membership) => {
+
+    if (!orgId) {
+      const firstMembership = await prisma.userOrganization.findFirst({
+        where: { userId },
+      });
+      if (!firstMembership) {
+        return res.status(403).json({ success: false, message: "No organization found for this user" });
+      }
+      orgId = firstMembership.organizationId;
+    }
+
+    const membership = await prisma.userOrganization.findUnique({
+      where: {
+        userId_organizationId: {
+          userId,
+          organizationId: orgId,
+        },
+      },
+    });
+
     if (!membership) {
       return res.status(403).json({ success: false, message: "You are not a member of this organization" });
     }
+
     req.org = {
       id: orgId,
       role: membership.role,
     };
     next();
-  }).catch((err) => {
+  } catch (err: any) {
     return res.status(500).json({ success: false, message: "Error verifying organization membership", error: err.message });
-  });
+  }
 };
 
 export const requireRole = (allowedRoles: Role[]) => {

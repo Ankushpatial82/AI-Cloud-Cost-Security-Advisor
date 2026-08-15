@@ -396,3 +396,55 @@ export const logout = async (req: Request, res: Response) => {
   });
   return res.json({ success: true, message: "Logged out successfully" });
 };
+
+export const getMe = async (req: Request, res: Response) => {
+  try {
+    const userId = req.user?.userId;
+    if (!userId) {
+      return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        mfaEnabled: true,
+        memberships: {
+          include: {
+            organization: true,
+          },
+        },
+      },
+    });
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    const primaryOrg = user.memberships[0]?.organization;
+    const primaryRole = user.memberships[0]?.role;
+
+    return res.json({
+      success: true,
+      data: {
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          mfaEnabled: user.mfaEnabled,
+        },
+        organization: primaryOrg
+          ? {
+              id: primaryOrg.id,
+              name: primaryOrg.name,
+              role: primaryRole,
+            }
+          : null,
+      },
+    });
+  } catch (error: any) {
+    return res.status(500).json({ success: false, message: "Failed to get current user", error: error.message });
+  }
+};

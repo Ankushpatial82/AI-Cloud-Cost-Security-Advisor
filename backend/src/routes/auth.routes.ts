@@ -6,12 +6,14 @@ import {
   setupMFA,
   confirmMFASetup,
   refreshToken,
-  logout
+  logout,
+  getMe
 } from "../controllers/auth.controller";
 import { authenticateUser } from "../middlewares/auth";
 
 const router = Router();
 
+router.get("/me", authenticateUser, getMe);
 router.post("/register", register);
 router.post("/login", login);
 router.post("/mfa/verify", verifyMFA);
