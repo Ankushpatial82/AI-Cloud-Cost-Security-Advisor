@@ -26,7 +26,7 @@ export default function RegisterPage() {
     setError("");
 
     try {
-      const res = await api.post("/api/auth/register", { name, email, password });
+      const res = await api.post("/auth/register", { name, email, password });
 
       if (res.data?.success) {
         const data = res.data.data;

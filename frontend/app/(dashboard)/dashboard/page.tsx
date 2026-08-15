@@ -48,7 +48,7 @@ export default function OverviewPage() {
   const { data: costSummary, isLoading: costLoading, refetch: refetchCost } = useQuery({
     queryKey: ["costSummary"],
     queryFn: async () => {
-      const res = await api.get("/api/costs/dashboard");
+      const res = await api.get("/costs/dashboard");
       return res.data?.data;
     },
   });

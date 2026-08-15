@@ -30,7 +30,7 @@ export default function CostsPage() {
   const { data: costData, isLoading: costLoading } = useQuery({
     queryKey: ["costDashboard"],
     queryFn: async () => {
-      const res = await api.get("/api/costs/dashboard");
+      const res = await api.get("/costs/dashboard");
       return res.data?.data;
     },
   });
@@ -39,7 +39,7 @@ export default function CostsPage() {
   const { data: forecastData, isLoading: forecastLoading } = useQuery({
     queryKey: ["costForecast"],
     queryFn: async () => {
-      const res = await api.get("/api/costs/forecast");
+      const res = await api.get("/costs/forecast");
       return res.data?.data;
     },
   });
@@ -48,7 +48,7 @@ export default function CostsPage() {
   const { data: recommendations = [], isLoading: recsLoading } = useQuery({
     queryKey: ["costRecommendations"],
     queryFn: async () => {
-      const res = await api.get("/api/costs/recommendations");
+      const res = await api.get("/costs/recommendations");
       return res.data?.data;
     },
   });
@@ -56,7 +56,7 @@ export default function CostsPage() {
   const fetchAISummary = async () => {
     setAiReportLoading(true);
     try {
-      const res = await api.get("/api/costs/summary");
+      const res = await api.get("/costs/summary");
       if (res.data?.success) {
         setAiSummary(res.data.data.summary);
       }
