@@ -98,7 +98,7 @@ exports.updateSubscription = updateSubscription;
 const downloadInvoicePdf = async (req, res) => {
     try {
         const orgId = req.org?.id;
-        const { invoiceId } = req.params;
+        const invoiceId = req.params.invoiceId;
         if (!orgId)
             return res.status(400).json({ success: false, message: "Organization context required" });
         const invoice = await db_1.default.invoice.findFirst({

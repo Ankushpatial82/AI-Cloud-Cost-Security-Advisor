@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.logout = exports.refreshToken = exports.confirmMFASetup = exports.setupMFA = exports.verifyMFA = exports.login = exports.register = void 0;
+exports.getMe = exports.logout = exports.refreshToken = exports.confirmMFASetup = exports.setupMFA = exports.verifyMFA = exports.login = exports.register = void 0;
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const db_1 = __importDefault(require("../config/db"));
 const jwt_1 = require("../utils/jwt");
@@ -77,7 +77,8 @@ const register = async (req, res) => {
         res.cookie("refreshToken", refreshToken, {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
-            maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+            maxAge: 7 * 24 * 60 * 60 * 1000,
         });
         return res.status(201).json({
             success: true,
@@ -99,7 +100,8 @@ const register = async (req, res) => {
         });
     }
     catch (error) {
-        return res.status(500).json({ success: false, message: "Registration failed", error: error.message });
+        console.error("Registration error:", error);
+        return res.status(500).json({ success: false, message: error.message || "Registration failed" });
     }
 };
 exports.register = register;
@@ -157,6 +159,7 @@ const login = async (req, res) => {
         res.cookie("refreshToken", refreshToken, {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
+            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
             maxAge: 7 * 24 * 60 * 60 * 1000,
         });
         return res.json({
@@ -233,6 +236,7 @@ const verifyMFA = async (req, res) => {
         res.cookie("refreshToken", refreshToken, {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
+            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
             maxAge: 7 * 24 * 60 * 60 * 1000,
         });
         return res.json({
@@ -354,7 +358,60 @@ const refreshToken = async (req, res) => {
 };
 exports.refreshToken = refreshToken;
 const logout = async (req, res) => {
-    res.clearCookie("refreshToken");
+    res.clearCookie("refreshToken", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    });
     return res.json({ success: true, message: "Logged out successfully" });
 };
 exports.logout = logout;
+const getMe = async (req, res) => {
+    try {
+        const userId = req.user?.userId;
+        if (!userId) {
+            return res.status(401).json({ success: false, message: "Unauthorized" });
+        }
+        const user = await db_1.default.user.findUnique({
+            where: { id: userId },
+            select: {
+                id: true,
+                email: true,
+                name: true,
+                mfaEnabled: true,
+                memberships: {
+                    include: {
+                        organization: true,
+                    },
+                },
+            },
+        });
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+        const primaryOrg = user.memberships[0]?.organization;
+        const primaryRole = user.memberships[0]?.role;
+        return res.json({
+            success: true,
+            data: {
+                user: {
+                    id: user.id,
+                    email: user.email,
+                    name: user.name,
+                    mfaEnabled: user.mfaEnabled,
+                },
+                organization: primaryOrg
+                    ? {
+                        id: primaryOrg.id,
+                        name: primaryOrg.name,
+                        role: primaryRole,
+                    }
+                    : null,
+            },
+        });
+    }
+    catch (error) {
+        return res.status(500).json({ success: false, message: "Failed to get current user", error: error.message });
+    }
+};
+exports.getMe = getMe;

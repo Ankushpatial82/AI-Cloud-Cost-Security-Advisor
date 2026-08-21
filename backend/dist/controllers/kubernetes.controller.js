@@ -78,7 +78,7 @@ exports.getClusters = getClusters;
 const getClusterMetrics = async (req, res) => {
     try {
         const orgId = req.org?.id;
-        const { clusterId } = req.params;
+        const clusterId = req.params.clusterId;
         if (!orgId)
             return res.status(400).json({ success: false, message: "Organization context required" });
         const cluster = await db_1.default.kubernetesCluster.findFirst({
@@ -118,7 +118,7 @@ exports.getClusterMetrics = getClusterMetrics;
 const getClusterRecommendations = async (req, res) => {
     try {
         const orgId = req.org?.id;
-        const { clusterId } = req.params;
+        const clusterId = req.params.clusterId;
         if (!orgId)
             return res.status(400).json({ success: false, message: "Organization context required" });
         const cluster = await db_1.default.kubernetesCluster.findFirst({

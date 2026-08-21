@@ -22,23 +22,30 @@ const authenticateUser = (req, res, next) => {
     }
 };
 exports.authenticateUser = authenticateUser;
-const requireOrganization = (req, res, next) => {
-    const orgId = req.headers["x-organization-id"] || req.params.orgId;
-    const userId = req.user?.userId;
-    if (!orgId) {
-        return res.status(400).json({ success: false, message: "Organization ID is required in headers (x-organization-id) or path params" });
-    }
-    if (!userId) {
-        return res.status(401).json({ success: false, message: "Authentication required" });
-    }
-    db_1.default.userOrganization.findUnique({
-        where: {
-            userId_organizationId: {
-                userId,
-                organizationId: orgId,
-            }
+const requireOrganization = async (req, res, next) => {
+    try {
+        let orgId = req.headers["x-organization-id"] || req.params.orgId;
+        const userId = req.user?.userId;
+        if (!userId) {
+            return res.status(401).json({ success: false, message: "Authentication required" });
         }
-    }).then((membership) => {
+        if (!orgId) {
+            const firstMembership = await db_1.default.userOrganization.findFirst({
+                where: { userId },
+            });
+            if (!firstMembership) {
+                return res.status(403).json({ success: false, message: "No organization found for this user" });
+            }
+            orgId = firstMembership.organizationId;
+        }
+        const membership = await db_1.default.userOrganization.findUnique({
+            where: {
+                userId_organizationId: {
+                    userId,
+                    organizationId: orgId,
+                },
+            },
+        });
         if (!membership) {
             return res.status(403).json({ success: false, message: "You are not a member of this organization" });
         }
@@ -47,9 +54,10 @@ const requireOrganization = (req, res, next) => {
             role: membership.role,
         };
         next();
-    }).catch((err) => {
+    }
+    catch (err) {
         return res.status(500).json({ success: false, message: "Error verifying organization membership", error: err.message });
-    });
+    }
 };
 exports.requireOrganization = requireOrganization;
 const requireRole = (allowedRoles) => {

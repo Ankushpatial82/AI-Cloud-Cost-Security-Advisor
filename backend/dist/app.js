@@ -18,7 +18,18 @@ const billing_routes_1 = __importDefault(require("./routes/billing.routes"));
 const app = (0, express_1.default)();
 // Middlewares
 app.use((0, cors_1.default)({
-    origin: process.env.FRONTEND_URL || "http://localhost:3000",
+    origin: (origin, callback) => {
+        if (!origin)
+            return callback(null, true);
+        const allowed = process.env.FRONTEND_URL;
+        if (!allowed ||
+            origin === allowed ||
+            origin.endsWith(".vercel.app") ||
+            origin.includes("localhost")) {
+            return callback(null, true);
+        }
+        return callback(null, true);
+    },
     credentials: true,
 }));
 app.use(express_1.default.json());
@@ -37,7 +48,28 @@ app.use((req, _res, next) => {
     }
     next();
 });
-// Base API Ping route
+// Base Root & Ping routes
+app.get("/", (_req, res) => {
+    return res.json({
+        message: "AI Cloud Cost & Security Advisor API Service",
+        status: "healthy",
+        version: "1.0.0",
+        endpoints: {
+            health: "/api/health",
+            auth: "/api/auth",
+            orgs: "/api/orgs"
+        }
+    });
+});
+app.get("/api", (_req, res) => {
+    return res.json({
+        message: "AI Cloud Cost & Security Advisor API",
+        status: "healthy",
+        endpoints: {
+            health: "/api/health"
+        }
+    });
+});
 app.get("/api/health", (_req, res) => {
     return res.json({ success: true, status: "healthy", timestamp: new Date() });
 });

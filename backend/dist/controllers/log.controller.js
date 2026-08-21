@@ -1,6 +1,10 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.analyzeLogs = void 0;
+exports.getAuditLogs = exports.analyzeLogs = void 0;
+const db_1 = __importDefault(require("../config/db"));
 const openai_1 = require("../providers/openai");
 const analyzeLogs = async (req, res) => {
     try {
@@ -44,3 +48,31 @@ Suggest root-cause explanations and steps to resolve these faults.`;
     }
 };
 exports.analyzeLogs = analyzeLogs;
+const getAuditLogs = async (req, res) => {
+    try {
+        const orgId = req.org?.id;
+        if (!orgId)
+            return res.status(400).json({ success: false, message: "Organization context required" });
+        const auditLogs = await db_1.default.auditLog.findMany({
+            where: { organizationId: orgId },
+            include: {
+                user: {
+                    select: {
+                        name: true,
+                        email: true,
+                    },
+                },
+            },
+            orderBy: { createdAt: "desc" },
+            take: 50,
+        });
+        return res.json({
+            success: true,
+            data: auditLogs,
+        });
+    }
+    catch (error) {
+        return res.status(500).json({ success: false, message: "Failed to fetch audit logs", error: error.message });
+    }
+};
+exports.getAuditLogs = getAuditLogs;

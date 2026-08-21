@@ -197,7 +197,7 @@ exports.addMember = addMember;
 const updateMemberRole = async (req, res) => {
     try {
         const orgId = req.org?.id;
-        const { memberId } = req.params;
+        const memberId = req.params.memberId;
         const { role } = req.body;
         if (!orgId)
             return res.status(400).json({ success: false, message: "Organization context required" });
@@ -255,7 +255,7 @@ exports.updateMemberRole = updateMemberRole;
 const removeMember = async (req, res) => {
     try {
         const orgId = req.org?.id;
-        const { memberId } = req.params;
+        const memberId = req.params.memberId;
         if (!orgId)
             return res.status(400).json({ success: false, message: "Organization context required" });
         const membership = await db_1.default.userOrganization.findFirst({

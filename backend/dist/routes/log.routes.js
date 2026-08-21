@@ -7,4 +7,5 @@ const router = (0, express_1.Router)();
 router.use(auth_1.authenticateUser);
 router.use(auth_1.requireOrganization);
 router.post("/analyze", log_controller_1.analyzeLogs);
+router.get("/audit", log_controller_1.getAuditLogs);
 exports.default = router;

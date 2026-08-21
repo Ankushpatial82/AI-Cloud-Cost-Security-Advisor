@@ -93,7 +93,7 @@ exports.getFindings = getFindings;
 const explainFinding = async (req, res) => {
     try {
         const orgId = req.org?.id;
-        const { findingId } = req.params;
+        const findingId = req.params.findingId;
         if (!orgId)
             return res.status(400).json({ success: false, message: "Organization context required" });
         const finding = await db_1.default.securityFinding.findFirst({
@@ -138,7 +138,7 @@ exports.explainFinding = explainFinding;
 const updateFindingStatus = async (req, res) => {
     try {
         const orgId = req.org?.id;
-        const { findingId } = req.params;
+        const findingId = req.params.findingId;
         const { status } = req.body; // RESOLVED or MUTED
         if (!orgId)
             return res.status(400).json({ success: false, message: "Organization context required" });

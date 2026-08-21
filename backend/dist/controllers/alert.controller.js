@@ -26,7 +26,7 @@ exports.getAlerts = getAlerts;
 const acknowledgeAlert = async (req, res) => {
     try {
         const orgId = req.org?.id;
-        const { alertId } = req.params;
+        const alertId = req.params.alertId;
         if (!orgId)
             return res.status(400).json({ success: false, message: "Organization context required" });
         const alert = await db_1.default.alert.findFirst({

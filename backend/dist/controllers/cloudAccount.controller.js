@@ -87,7 +87,7 @@ exports.getAccounts = getAccounts;
 const validateAccount = async (req, res) => {
     try {
         const orgId = req.org?.id;
-        const { accountId } = req.params;
+        const accountId = req.params.accountId;
         if (!orgId)
             return res.status(400).json({ success: false, message: "Organization context required" });
         const account = await db_1.default.cloudAccount.findFirst({
@@ -127,7 +127,7 @@ exports.validateAccount = validateAccount;
 const deleteAccount = async (req, res) => {
     try {
         const orgId = req.org?.id;
-        const { accountId } = req.params;
+        const accountId = req.params.accountId;
         if (!orgId)
             return res.status(400).json({ success: false, message: "Organization context required" });
         const account = await db_1.default.cloudAccount.findFirst({

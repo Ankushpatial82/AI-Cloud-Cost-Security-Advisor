@@ -130,7 +130,7 @@ exports.getResourceSummary = getResourceSummary;
 const getResourceDetails = async (req, res) => {
     try {
         const orgId = req.org?.id;
-        const { id } = req.params;
+        const id = req.params.id;
         if (!orgId)
             return res.status(400).json({ success: false, message: "Organization context required" });
         const resource = await db_1.default.cloudResource.findFirst({
