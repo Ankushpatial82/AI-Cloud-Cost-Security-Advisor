@@ -4,7 +4,7 @@ An AI-powered cloud optimization and security platform that helps organizations 
 
 ## 🌐 Live Demo 
 
-**Frontend:** ai-cloud-cost-security-advisor.vercel.app
+**Frontend:** https://ai-cloud-cost-security-advisor.vercel.app
 
 **Backend API:** https://ai-cloud-cost-security-advisor-1.onrender.com
 
